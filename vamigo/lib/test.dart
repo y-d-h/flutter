@@ -24,7 +24,7 @@ class _TestState extends State<Test> {
           OutlinedButton(
               onPressed: () {
                 //TestGetxDialog();
-                getxSnackbar('', '사용가능한 메일입니다');
+                getxSnackbar('', '메일이 도착하기까지 시간이 걸릴 수 있습니다');
               },
               child: Text('test getx dialog')),
         ],

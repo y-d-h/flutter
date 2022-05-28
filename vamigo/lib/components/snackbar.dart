@@ -5,6 +5,7 @@ void getxSnackbar(String title, dynamic message) {
   Get.snackbar(
     title,
     message,
+    titleText: Text('vamigo', style: TextStyle(fontWeight: FontWeight.bold)),
     messageText: Text(
       message,
       style: TextStyle(fontSize: 18),
@@ -15,4 +16,3 @@ void getxSnackbar(String title, dynamic message) {
     reverseAnimationCurve: Curves.easeOut, // 화면에서 사라질 때 애니메이션 커브
   );
 }
-

@@ -3,6 +3,7 @@ import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:vamigo/components/dialog.dart';
 import 'package:vamigo/components/http_post.dart';
+import 'package:vamigo/components/info.dart';
 import 'package:vamigo/components/snackbar.dart';
 import 'package:vamigo/components/styles.dart';
 
@@ -14,11 +15,12 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  double boxHeight = 25;
   final httpPostManager = HttpPost();
 
   String mbtiDropdownValue = "none";
   String sexDropdownValue = "비밀";
-  String yearDropdownValue = '2021';
+  String yearDropdownValue = getToday().toString();
   List<String> categorySelectedItems = [];
   List<String> genreSelectedItems = [];
 
@@ -55,12 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
   void _categoryShowMultiSelect() async {
     // a list of selectable items
     // these items can be hard-coded or dynamically fetched from a database/API
-    final List<String> _categories = [
-      '영화',
-      '책',
-      '게임',
-      '애니메이션',
-    ];
+    final List<String> _categories = Info.categories;
 
     final List<String>? results = await showDialog(
       context: context,
@@ -80,17 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
   void _genreShowMultiSelect() async {
     // a list of selectable items
     // these items can be hard-coded or dynamically fetched from a database/API
-    final List<String> _genres = [
-      '드라마',
-      'SF',
-      '액션',
-      '미스터리',
-      '스릴러',
-      'RPG',
-      'FPS',
-      '시뮬레이션',
-      '레이싱',
-    ];
+    final List<String> _genres = Info.genres;
 
     final List<String>? results = await showDialog(
       context: context,
@@ -148,8 +135,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       (value!.isEmpty) ? "이메일을 입력 해 주세요" : null,
                   style: Styles.inputTextStyle,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email),
-                    labelText: "Email",
+                    //prefixIcon: Icon(Icons.email),
+                    labelText: "메일 *",
                     border: OutlineInputBorder(),
                     suffixIcon: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
@@ -176,17 +163,303 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: boxHeight),
                 TextFormField(
-                  controller: _password,
+                  controller: _code,
                   validator: (value) =>
-                      (value!.isEmpty) ? "비밀번호를 입력 해 주세요" : null,
+                      (value!.isEmpty) ? "인증코드를 입력 해 주세요" : null,
                   style: Styles.inputTextStyle,
                   decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
-                      labelText: "Password",
-                      border: OutlineInputBorder()),
+                    labelText: "인증코드 *",
+                    border: OutlineInputBorder(),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: TextButton(
+                        child: Text('코드요청'),
+                        onPressed: () {
+                          Map<String, dynamic> mailToJson() =>
+                              {'mail': _email.text};
+                          Future<Response> futureResponse =
+                              httpPostManager.makePostRequest(
+                                  mailToJson(), '/member/mailauth', context);
+
+                          futureResponse.then((value) {
+                            if (value.statusCode >= 400) {
+                              getxSnackbar('', value.body);
+                            } else {
+                              getxSnackbar('', '메일이 도착하기까지 시간이 걸릴 수 있습니다');
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ),
+                SizedBox(height: boxHeight),
+                TextFormField(
+                  controller: _nickname,
+                  validator: (value) =>
+                      (value!.isEmpty) ? "닉네임을 입력 해 주세요" : null,
+                  style: Styles.inputTextStyle,
+                  decoration: InputDecoration(
+                      labelText: "닉네임 *", border: OutlineInputBorder()),
+                ),
+                SizedBox(height: boxHeight),
+                TextFormField(
+                  obscureText: true,
+                  controller: _password,
+                  validator: (value) =>
+                      (value!.isEmpty) ? "패스워드를 입력 해 주세요" : null,
+                  style: Styles.inputTextStyle,
+                  decoration: InputDecoration(
+                      labelText: "패스워드 *", border: OutlineInputBorder()),
+                ),
+                SizedBox(height: boxHeight),
+                TextFormField(
+                  obscureText: true,
+                  controller: _password2,
+                  validator: (value) =>
+                      (value != _password.text) ? "패스워드가 다릅니다" : null,
+                  style: Styles.inputTextStyle,
+                  decoration: InputDecoration(
+                      labelText: "패스워드 확인 *", border: OutlineInputBorder()),
+                ),
+                SizedBox(height: boxHeight),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        'MBTI',
+                        style: TextStyle(fontSize: 22),
+                        //textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Borders.boxBorderStyle),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DropdownButton(
+                        isDense: true,
+                        items: Info.mbtis
+                            .map<DropdownMenuItem<String>>((String mbti) {
+                          return DropdownMenuItem<String>(
+                              child: Text(mbti), value: mbti);
+                        }).toList(),
+                        value: mbtiDropdownValue,
+                        onChanged: mbtiDropdownCallback,
+                        isExpanded: true,
+                        underline: DropdownButtonHideUnderline(
+                          child: Container(),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        '성별',
+                        style: TextStyle(fontSize: 22),
+                        //textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Borders.boxBorderStyle),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DropdownButton(
+                        isDense: true,
+                        items: Info.sexs,
+                        value: sexDropdownValue,
+                        onChanged: sexDropdownCallback,
+                        isExpanded: true,
+                        underline: DropdownButtonHideUnderline(
+                          child: Container(),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        '출생년도',
+                        style: TextStyle(fontSize: 22),
+                        //textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
+                            style: BorderStyle.solid)),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DropdownButton(
+                        isDense: true,
+                        items: Info.yearDropDownOptions()
+                            .map<DropdownMenuItem<String>>((String year) {
+                          return DropdownMenuItem<String>(
+                              child: Text(year), value: year);
+                        }).toList(),
+                        value: yearDropdownValue,
+                        onChanged: yearDropdownCallback,
+                        isExpanded: true,
+                        underline: DropdownButtonHideUnderline(
+                          child: Container(),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          letterSpacing: 2.0,
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Borders.boxBorderStyle),
+                    child: TextButton(
+                      onPressed: () {
+                        _categoryShowMultiSelect();
+                      },
+                      child: const Text(
+                        '선호작품 선택',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Borders.boxBorderStyle),
+                    child: Column(
+                      children: [
+                        // display selected items
+                        Wrap(
+                          children: categorySelectedItems
+                              .map((e) => Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Chip(
+                                      label: Text(e),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: boxHeight),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Borders.boxBorderStyle),
+                    child: TextButton(
+                      onPressed: () {
+                        _genreShowMultiSelect();
+                      },
+                      child: const Text(
+                        '선호장르 선택',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Borders.boxBorderStyle),
+                    child: Column(
+                      children: [
+                        // display selected items
+                        Wrap(
+                          children: genreSelectedItems
+                              .map((e) => Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Chip(
+                                      label: Text(e),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 50),
+                OutlinedButton(
+                    onPressed: () {
+                      Get.toNamed('/signin');
+                    },
+                    child: Text('회원가입')),
+                SizedBox(height: boxHeight),
               ],
             ),
           ),

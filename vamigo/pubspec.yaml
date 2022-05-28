@@ -39,6 +39,7 @@ dependencies:
   quiver:
   expandable_text:
   http:
+  intl:
 
 dev_dependencies:
   flutter_test:
