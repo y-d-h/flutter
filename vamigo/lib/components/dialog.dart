@@ -39,7 +39,7 @@ Future SignInDialog(dynamic value) async {
   Get.dialog(
     AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      title: Text('GetX Dialog'),
+      title: Text('로그인 실패'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -83,6 +83,19 @@ void ResponseDialog(Response response) {
       ],
     ),
   );
+}
+
+void signupDialog() {
+  Get.dialog(AlertDialog(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    title: Text('회원가입 성공'),
+    actions: [
+      TextButton(
+        child: Text('로그인'),
+        onPressed: () => Get.toNamed('signin'),
+      )
+    ],
+  ));
 }
 
 void TestGetxDialog() {

@@ -23,9 +23,9 @@ class Info {
   ];
 
   static List<DropdownMenuItem<String>> sexs = [
-    DropdownMenuItem(child: Text("비밀"), value: "비밀"),
-    DropdownMenuItem(child: Text("남자"), value: "남자"),
-    DropdownMenuItem(child: Text("여자"), value: "여자"),
+    DropdownMenuItem(child: Text("비밀"), value: "secret"),
+    DropdownMenuItem(child: Text("남자"), value: "male"),
+    DropdownMenuItem(child: Text("여자"), value: "female"),
   ];
 
   static List<String> yearDropDownOptions() {
