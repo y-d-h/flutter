@@ -108,7 +108,13 @@ class _SignInPageState extends State<SignInPage> {
                           }
                           //Get.toNamed('/dashboard');
                         },
-                        child: Text('로그인'))
+                        child: Text('로그인')),
+                    OutlinedButton(
+                        onPressed: () async {
+                          Get.offAllNamed('/dashboard');
+                          //Get.toNamed('/dashboard');
+                        },
+                        child: Text('test 로그인'))
                   ],
                 ),
               ),

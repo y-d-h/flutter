@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vamigo/controller/bottom_nav_controller.dart';
-import 'package:vamigo/page/nav_page/account_page.dart';
+import 'package:vamigo/page/nav_page/profile_page/account_page.dart';
 import 'package:vamigo/page/nav_page/home_page.dart';
 import 'package:vamigo/page/nav_page/search_page.dart';
 import 'package:vamigo/page/nav_page/upload_page.dart';
