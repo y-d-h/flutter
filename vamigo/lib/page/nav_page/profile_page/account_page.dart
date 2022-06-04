@@ -6,6 +6,7 @@ import 'package:vamigo/components/styles.dart';
 import 'package:vamigo/controller/tapbar_controller.dart';
 import 'package:vamigo/controller/user_info_controller.dart';
 import 'package:vamigo/page/nav_page/profile_page/first_page.dart';
+import 'package:vamigo/page/nav_page/profile_page/profile_edit_page.dart';
 import 'package:vamigo/page/nav_page/profile_page/second_page.dart';
 
 class AccountPage extends StatelessWidget {
@@ -20,6 +21,15 @@ class AccountPage extends StatelessWidget {
         //title: Text(infoController.curNickname.toString()),
         title: Text('nickname'),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            tooltip: '프로필 편집',
+            onPressed: () {
+              Get.to(ProfileEditPage());
+            },
+          )
+        ],
       ),
       body: Center(
         child: Column(
